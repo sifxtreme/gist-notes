@@ -6,6 +6,11 @@ NOTES_FILE_PATH='../gist-note-files'
 module GistNotes
   class Uploader
 
+    def runner
+      sync_all_files_up
+      sync_index_file_up
+    end
+
     def get_files_to_sync
       folders = Dir.glob "#{NOTES_FILE_PATH}/*/"
 
@@ -43,7 +48,6 @@ module GistNotes
           )
         end
       end
-
     end
 
     def create_index_file_for_gist(files_to_sync)
