@@ -1,0 +1,3 @@
+class Config
+  GIST_NOTES_PATH=ENV['GIST_NOTES_PATH']
+end
