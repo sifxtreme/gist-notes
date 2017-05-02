@@ -9,7 +9,7 @@ module GistNotes
     INDEX_GIST_NAME="my_gist_notes.md"
 
     def first_time_upload
-      sync_all_files_up
+      sync_folders_up
       sync_root_index_file_up
     end
 
@@ -54,26 +54,33 @@ module GistNotes
       upload_gist(INDEX_GIST_NAME, index_file_hash_to_upload)
     end
 
-    def add_folder(folder)
-      binding.pry
+    def add_folder(path)
+      folder_path = path.split("/")[0..-2].join("/")
+      sync_folder_up("#{folder_path}/")
+      
       sync_root_index_file_up
     end
 
-    def delete_folder(folder)
-      binding.pry
+    def delete_folder(path)
+      refresh_gists
+      folder_name, _ = path.gsub(Config::GIST_NOTES_PATH, "").split("/")
+      gist_to_delete = gists.select {|x| x[:description] == folder_name}.first
+      client.delete_gist(gist_to_delete[:id]) if gist_to_delete
+      
       sync_root_index_file_up
     end
 
     def change_file(path, delete: false, add: false, change: false)
-      binding.pry
       folder_name, file = path.gsub(Config::GIST_NOTES_PATH, "").split("/")
 
       folder_path = path.split("/")[0..-2].join("/") # all but last element of array
 
-      folder_to_sync = get_files_to_sync_for_folders(["#{folder_path}/"])
+      file_hash = files_in_folder("#{folder_path}/")
+
+      files_to_sync = format_file_hash_for_upload(file_hash)
 
       index_file_hash = {
-        "_#{folder_name}.md" => {content: create_index_file_for_gist(folder_to_sync.values.flatten)}
+        "_#{folder_name}.md" => {content: create_index_file_for_gist(files_to_sync.keys)}
       }
       file_content = {content: File.read(path)} rescue nil
       files_to_sync = index_file_hash.merge({file => file_content})
@@ -92,23 +99,30 @@ module GistNotes
     end
 
 
-    def sync_all_files_up
+    def sync_folders_up
       folder_paths_to_sync.each do |folder_path|
-
-        folder_name = get_folder_name(folder_path)
-
-        file_hash = files_in_folder(folder_path)
-
-        files_to_sync = format_file_hash_for_upload(file_hash)
-
-        # insert blank file at the beginning with names of other files
-        index_file_hash = {
-          "_#{folder_name}.md" => {content: create_index_file_for_gist(files_to_sync.keys)}
-        }
-        files_to_sync = index_file_hash.merge(files_to_sync)
-
-        upload_gist(folder_name, files_to_sync)
+        sync_folder_up(folder_path)
       end
+    end
+
+    def sync_folder_up(folder_path)
+      folder_name = get_folder_name(folder_path)
+
+      file_hash = files_in_folder(folder_path)
+
+      files_to_sync = format_file_hash_for_upload(file_hash)
+
+      # insert blank file at the beginning with names of other files
+      index_file_hash = {
+        "_#{folder_name}.md" => {content: create_index_file_for_gist(files_to_sync.keys)}
+      }
+      files_to_sync = index_file_hash.merge(files_to_sync)
+begin
+  upload_gist(folder_name, files_to_sync)
+rescue => e
+  binding.pry
+end
+      # upload_gist(folder_name, files_to_sync)
     end
 
     def upload_gist(folder_name, files_to_sync)
@@ -176,6 +190,5 @@ module GistNotes
 
   end
 end
-
 
 GistNotes::Uploader.new.first_time_upload

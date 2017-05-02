@@ -15,7 +15,7 @@ end
 def remove_paths(paths)
   return unless is_valid_file_path?(paths.first)
   if paths.count > 1
-    gist_notes.delete_folder(folder)
+    gist_notes.delete_folder(paths.first)
   else
     gist_notes.change_file(paths.first, delete: true)
   end
@@ -27,7 +27,7 @@ def add_paths(paths)
   return unless is_valid_file_path?(paths.first)
 
   if paths.count > 1
-    gist_notes.add_folder(folder)
+    gist_notes.add_folder(paths.first)
   else
     gist_notes.change_file(paths.first, add: true)
   end
