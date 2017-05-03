@@ -117,12 +117,8 @@ module GistNotes
         "_#{folder_name}.md" => {content: create_index_file_for_gist(files_to_sync.keys)}
       }
       files_to_sync = index_file_hash.merge(files_to_sync)
-begin
-  upload_gist(folder_name, files_to_sync)
-rescue => e
-  binding.pry
-end
-      # upload_gist(folder_name, files_to_sync)
+
+      upload_gist(folder_name, files_to_sync)
     end
 
     def upload_gist(folder_name, files_to_sync)
@@ -184,11 +180,11 @@ end
     def md_for_gist_files(gist)
       gist[:files].map do |_,file|
         next if "_#{gist[:description]}.md" == file[:filename] # we created a special index file in a gist
-        "- [#{file[:filename]}](#{gist[:html_url]}#-#{file[:filename].gsub('.', '-').gsub(' ', '-')})"
+        "- [#{file[:filename]}](#{gist[:html_url]}#file-#{file[:filename].gsub('.', '-').gsub(' ', '-')})"
       end
     end
 
   end
 end
 
-GistNotes::Uploader.new.first_time_upload
+# GistNotes::Uploader.new.first_time_upload
