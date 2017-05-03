@@ -14,10 +14,11 @@ end
 
 def remove_paths(paths)
   return unless is_valid_file_path?(paths.first)
+  
   if paths.count > 1
     gist_notes.delete_folder(paths.first)
   else
-    gist_notes.change_file(paths.first, delete: true)
+    gist_notes.add_folder(paths.first)
   end
 
   puts "removed: #{paths}"
@@ -26,11 +27,7 @@ end
 def add_paths(paths)
   return unless is_valid_file_path?(paths.first)
 
-  if paths.count > 1
-    gist_notes.add_folder(paths.first)
-  else
-    gist_notes.change_file(paths.first, add: true)
-  end
+  gist_notes.add_folder(paths.first)
 
   puts "added: #{paths}"
 end
@@ -40,7 +37,7 @@ def modified_paths(paths)
 
   raise "you can modify multiple paths at once?" if paths.count > 1
 
-  gist_notes.change_file(paths.first, change: true)
+  gist_notes.add_folder(paths.first)
 
   puts "modified: #{paths}"
 end

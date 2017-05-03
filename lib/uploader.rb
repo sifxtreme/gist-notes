@@ -70,26 +70,6 @@ module GistNotes
       sync_root_index_file_up
     end
 
-    def change_file(path, delete: false, add: false, change: false)
-      folder_name, file = path.gsub(Config::GIST_NOTES_PATH, "").split("/")
-
-      folder_path = path.split("/")[0..-2].join("/") # all but last element of array
-
-      file_hash = files_in_folder("#{folder_path}/")
-
-      files_to_sync = format_file_hash_for_upload(file_hash)
-
-      index_file_hash = {
-        "_#{folder_name}.md" => {content: create_index_file_for_gist(files_to_sync.keys)}
-      }
-      file_content = {content: File.read(path)} rescue nil
-      files_to_sync = index_file_hash.merge({file => file_content})
-
-      upload_gist(folder_name, files_to_sync)
-      
-      sync_root_index_file_up
-    end
-
     def get_folder_name(path)
       path.gsub(Config::GIST_NOTES_PATH, "").split("/").reject {|x| x.empty?}.first
     end
