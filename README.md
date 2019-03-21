@@ -3,11 +3,11 @@
 Automatically watch files in a folder and upload changes to Gist. You need to set these env variables to use this tool.
 
 ```
-ENV["GITHUB_TOKEN"]
+ENV["GIST_GITHUB_TOKEN"]
 ENV['GIST_NOTES_PATH']
 ```
 
-`GIST_NOTES_PATH` is the file directory where you will be authoring the files that you want converted automatically into gists.
+`GIST_NOTES_PATH` is the file directory where you will be authoring the files that you want converted automatically into gists. (Be sure to have a `/` at the end of the path)
 
 This app assumes a file structure of
 
