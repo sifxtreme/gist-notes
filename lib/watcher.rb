@@ -15,11 +15,7 @@ end
 def remove_paths(paths)
   return unless is_valid_file_path?(paths.first)
   
-  if paths.count > 1
-    gist_notes.delete_folder(paths.first)
-  else
-    gist_notes.add_folder(paths.first)
-  end
+  paths.each { |path| gist_notes.delete_folder(path) }
 
   puts "removed: #{paths}"
 end
@@ -27,7 +23,7 @@ end
 def add_paths(paths)
   return unless is_valid_file_path?(paths.first)
 
-  gist_notes.add_folder(paths.first)
+  paths.each { |path| gist_notes.add_folder(path) }
 
   puts "added: #{paths}"
 end
@@ -35,27 +31,16 @@ end
 def modified_paths(paths)
   return unless is_valid_file_path?(paths.first)
 
-  raise "you can modify multiple paths at once?" if paths.count > 1
-
-  gist_notes.add_folder(paths.first)
+  paths.each { |path| gist_notes.add_folder(path) }
 
   puts "modified: #{paths}"
 end
 
 listener = Listen.to(Config::GIST_NOTES_PATH) do |modified, added, removed|
-  
-  if removed.any?
-    remove_paths(removed)
-  end
-  
-  if added.any?
-    add_paths(added)
-  end
-
-  if modified.any?
-    modified_paths(modified)
-  end
-
+  remove_paths(removed) if removed.any?
+  add_paths(added) if added.any?
+  modified_paths(modified) if modified.any?
 end
+
 listener.start # not blocking
 sleep

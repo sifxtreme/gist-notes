@@ -6,7 +6,7 @@ require 'pry'
 module GistNotes
   class Uploader
 
-    INDEX_GIST_NAME="asif_notes.md"
+    INDEX_GIST_NAME="notes.md"
 
     def first_time_upload
       sync_folders_up
@@ -66,6 +66,7 @@ module GistNotes
     def delete_folder(path)
       refresh_gists
       folder_name, _ = path.gsub(Config::GIST_NOTES_PATH, "").split("/")
+
       gist_to_delete = gists.select {|x| x[:description] == folder_name}.first
       client.delete_gist(gist_to_delete[:id]) if gist_to_delete
       
@@ -106,7 +107,7 @@ module GistNotes
     end
 
     def upload_gist(folder_name, files_to_sync)
-      puts "upload_gist #{folder_name} : #{files_to_sync}"
+      puts "upload_gist #{folder_name}"
 
       if existing_gist = get_gist_for(folder_name)
         files_on_github = existing_gist[:files].map {|k,_| k.to_s}
@@ -172,5 +173,3 @@ module GistNotes
 
   end
 end
-
-# GistNotes::Uploader.new.first_time_upload
