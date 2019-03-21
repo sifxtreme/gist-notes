@@ -6,7 +6,7 @@ require 'pry'
 module GistNotes
   class Uploader
 
-    INDEX_GIST_NAME="my_gist_notes.md"
+    INDEX_GIST_NAME="asif_notes.md"
 
     def first_time_upload
       sync_folders_up
@@ -55,6 +55,8 @@ module GistNotes
     end
 
     def add_folder(path)
+      puts "add_folder #{path}"
+
       folder_path = path.split("/")[0..-2].join("/")
       sync_folder_up("#{folder_path}/")
       
@@ -86,6 +88,8 @@ module GistNotes
     end
 
     def sync_folder_up(folder_path)
+      puts "sync_folder_up #{folder_path}"
+
       folder_name = get_folder_name(folder_path)
 
       file_hash = files_in_folder(folder_path)
@@ -102,6 +106,8 @@ module GistNotes
     end
 
     def upload_gist(folder_name, files_to_sync)
+      puts "upload_gist #{folder_name} : #{files_to_sync}"
+
       if existing_gist = get_gist_for(folder_name)
         files_on_github = existing_gist[:files].map {|k,_| k.to_s}
         files_to_delete = files_on_github - files_to_sync.keys
@@ -119,7 +125,7 @@ module GistNotes
     end
 
     def client
-      @client ||= Octokit::Client.new(access_token: ENV["GITHUB_TOKEN"])
+      @client ||= Octokit::Client.new(access_token: ENV["GIST_GITHUB_TOKEN"])
     end
 
     def user
@@ -144,7 +150,7 @@ module GistNotes
     end
 
     def create_index_file(my_gists)
-      ["# MY GIST NOTES", "", "", my_gists.map {|x| md_for_gist(x)}].flatten.join("\n")
+      ["# NOTES", "", "", my_gists.map {|x| md_for_gist(x)}].flatten.join("\n")
     end
 
     def md_for_gist(gist)
