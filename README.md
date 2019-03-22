@@ -27,6 +27,8 @@ Empty directories will not be converted to gists. Empty files will not be conver
 
 Also on every file change, a master index file will be uploaded/updated. This has a link to all your other uploaded gists (through this app).
 
+If you have an existing folder structure that matches the above and want to sync them up you will have run something like `GistNotes::Uploader.new.first_time_upload`.
+
 Usage
 
 ```
