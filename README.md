@@ -33,5 +33,5 @@ Usage
 
 ```
 rvm use
-ruby lib/watcher.rb
+ruby lib/downloader && lib/watcher.rb
 ```
